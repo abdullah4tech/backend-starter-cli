@@ -1,15 +1,15 @@
 {
-  "name": "backend-starter",
+  "name": "backend-starter-cli",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
   "keywords": [
     "backend",
     "starter-kit",
-    "backend-starter"
+    "backend-starter-cli"
   ],
   "bin": {
-    "backend-starter": "bin/index.js"
+    "backend-starter-cli": "bin/index.js"
   },
   "author": "Abdullah O. Mustapha",
   "license": "MIT",
