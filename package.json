@@ -1,0 +1,9 @@
+{
+  "name": "backend-starter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": ["backend","starter-kit", "backend-starter"],
+  "author": "Abdullah O. Mustapha",
+  "license": "MIT",
+  "description": "Backend Starter CLI is a command-line tool that helps developers quickly set up a backend project with popular frameworks like Express, NestJS, and Koa"
+}
