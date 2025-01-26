@@ -29,19 +29,19 @@ To use the `backend-starter` CLI, first ensure you have [Node.js](https://nodejs
 
 Install the package globally using npm:
 ```bash
-npm install -g backend-starter
+npm install -g backend-starte-cli
 ```
 
 Now you can use the CLI anywhere with:
 ```bash
-backend-starter
+backend-starte-cli
 ```
 
 ### One-Time Use with NPX
 
 Alternatively, you can use it without installation via npx:
 ```bash
-npx backend-starter
+npx backend-starte-cli
 ```
 
 ---
@@ -52,7 +52,7 @@ npx backend-starter
 
 Run the CLI and follow the interactive prompts:
 ```bash
-backend-starter
+backend-starte-cli
 ```
 
 You will be asked to provide the following details:
@@ -65,7 +65,7 @@ You will be asked to provide the following details:
 
 #### 1. Scaffold a Project
 ```bash
-backend-starter
+backend-starte-cli
 ```
 *Example prompt interaction:*
 ```
