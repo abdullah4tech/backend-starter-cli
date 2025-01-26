@@ -102,9 +102,7 @@ my-awesome-backend/
 ├── .env                 # Environment variables
 ├── package.json         # Project metadata and dependencies
 ├── node_modules/        # Installed dependencies
-├── index.js             # Entry point for the application
-├── db.js                # Database connection file (if applicable)
-└── prisma/              # Prisma files (if applicable)
+└── index.js              # Entry point for the application
 ```
 
 ---
