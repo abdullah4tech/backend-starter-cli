@@ -3,18 +3,16 @@
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import fs from 'fs';
-import shell from 'shelljs';
+import path from 'path';
 
-// Listen to ctrl + c to exit gracefully
 process.on("SIGINT", () => {
   console.log(chalk.yellow("\nProcess terminated by user. Goodbye!"));
   process.exit(0); // Exit without errors
 });
 
 async function setupProject() {
-  console.log(chalk.blue('Welcome to the Backend Starter CLI! 🚀'));
+  console.log(chalk.blue('\nWelcome to the Backend Starter CLI! 🚀\n'));
 
-  // Prompt the user for project preferences
   const answers = await inquirer.prompt([
     {
       type: 'input',
@@ -25,8 +23,8 @@ async function setupProject() {
     {
       type: 'confirm',
       name: 'versionControl',
-      message: 'Do you want to Initialize git?',
-      default: false
+      message: 'Do you want to initialize Git?',
+      default: false,
     },
     {
       type: 'list',
@@ -38,33 +36,20 @@ async function setupProject() {
     {
       type: 'confirm',
       name: 'addDatabase',
-      message: 'Do you want to include a database setup?',
+      message: 'Do you want to include database configuration?',
       default: true,
     },
   ]);
 
   let dbConfig = {};
   if (answers.addDatabase) {
-    // Prompt the user for additional database configuration
     dbConfig = await inquirer.prompt([
       {
         type: 'list',
         name: 'databaseType',
         message: 'Choose a database type:',
         choices: ['MongoDB', 'PostgreSQL', 'MySQL'],
-        default: 'PostgreSQL',
-      },
-      {
-        type: 'input',
-        name: 'schemaName',
-        message: 'Enter the database schema name:',
-        default: 'my_schema',
-      },
-      {
-        type: 'confirm',
-        name: 'usePrisma',
-        message: 'Do you want to use Prisma as your ORM?',
-        default: true,
+        default: 'MongoDB',
       },
       {
         type: 'confirm',
@@ -76,36 +61,51 @@ async function setupProject() {
   }
 
   const { projectName, framework, versionControl, addDatabase } = answers;
+  const projectPath = path.resolve(process.cwd(), projectName);
 
-  // Create the project directory
-  if (!fs.existsSync(projectName)) {
-    fs.mkdirSync(projectName);
-    console.log(chalk.green(`Created project directory: ${projectName}`));
-  } else {
+  // Create project directory
+  if (fs.existsSync(projectPath)) {
     console.log(chalk.red(`Directory "${projectName}" already exists! Exiting.`));
     process.exit(1);
   }
+  fs.mkdirSync(projectPath);
 
-  shell.cd(projectName);
-
-  // Initialize an npm project
-  console.log(chalk.yellow('Initializing npm project...'));
-  shell.exec('npm init -y > /dev/null 2>&1');
-
-  // Install the selected framework
-  console.log(chalk.yellow(`Installing ${framework}...`));
+  // Framework dependencies
   const dependencies = {
     Express: ['express'],
     NestJS: ['@nestjs/core', '@nestjs/common', 'reflect-metadata'],
     Koa: ['koa'],
   };
-  shell.exec(`npm install ${dependencies[framework].join(' ')} > /dev/null 2>&1`);
+
+  // Initialize npm project with boilerplate package.json
+  const packageJsonPath = path.join(projectPath, 'package.json');
+  const packageJson = {
+    name: projectName,
+    version: '0.0.0',
+    main: 'index.js',
+    scripts: {
+      dev: 'node index.js',
+      start: 'node index.js',
+    },
+    dependencies: {},
+    type: 'module',
+    keywords: [],
+    author: "",
+    license: "ISC",
+    description: '',
+  };
+
+  dependencies[framework].forEach(dep => {
+    packageJson.dependencies[dep] = "latest"; // Add framework dependencies
+  });
+
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
   // Generate boilerplate code
-  console.log(chalk.yellow('Generating boilerplate code...'));
   const boilerplate = {
     Express: `
 import express from 'express';
+
 const app = express();
 const PORT = import.meta.env.PORT || 3000;
 
@@ -118,20 +118,13 @@ app.listen(PORT, () => {
 });
 `,
     NestJS: `
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
-}
-
-bootstrap();
+// NestJS boilerplate is available. Please refer to the official documentation to set up the project.
+console.log('NestJS boilerplate generated. Follow official docs for additional setup.');
 `,
     Koa: `
 import Koa from 'koa';
-const app = new Koa();
 
+const app = new Koa();
 app.use(async (ctx) => {
   ctx.body = 'Hello, World!';
 });
@@ -141,74 +134,36 @@ app.listen(3000, () => {
 });
 `,
   };
-  fs.writeFileSync('index.js', boilerplate[framework]);
+  fs.writeFileSync(path.join(projectPath, 'index.js'), boilerplate[framework]);
 
-  // Add database setup if selected
   if (addDatabase) {
-    console.log(chalk.yellow('Adding database setup...'));
-
-    // Create the .env file if requested
-    if (dbConfig.createEnvFile) {
-      const envContent = `# Environment Variables
-DATABASE_TYPE=${dbConfig.databaseType}
-SCHEMA_NAME=${dbConfig.schemaName}
+    const envContent = `
+DB_TYPE=${dbConfig.databaseType || 'your_db_type'}
 DB_HOST=localhost
-DB_PORT=${dbConfig.databaseType === 'MongoDB' ? '27017' : '5432'}
+DB_PORT=5432
 DB_USER=username
 DB_PASSWORD=password
-DATABASE_URL=`;
-
-      fs.writeFileSync('.env', envContent);
-      console.log(chalk.green('.env file created successfully!'));
-    }
-
-    // Set up Prisma if selected
-    if (dbConfig.usePrisma) {
-      console.log(chalk.yellow('\nSetting up Prisma...'));
-      shell.exec('npm install prisma --save-dev > /dev/null 2>&1');
-      shell.exec('npx prisma init');
-      console.log(chalk.green('Prisma has been set up successfully!'));
-    }
-
-    // Example database connection setup
-    if (dbConfig.databaseType === 'MongoDB') {
-      shell.exec('npm install mongoose > /dev/null 2>&1');
-      fs.writeFileSync(
-        'db.js',
-        `
-import mongoose from 'mongoose';
-
-const connectDB = async () => {
-  try {
-    await mongoose.connect('mongodb://localhost:27017/${dbConfig.schemaName}', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('Database connected successfully');
-  } catch (err) {
-    console.error('Database connection failed:', err.message);
-    process.exit(1);
-  }
-};
-
-export default connectDB;
-`
-      );
-    }
+DB_NAME=database_name
+    `;
+    fs.writeFileSync(path.join(projectPath, '.env'), envContent);
   }
 
-  // Initialize Git if requested
+  // Git initialization
   if (versionControl) {
-    try {
-      shell.exec('git init > /dev/null 2>&1');
-      console.log(chalk.yellow("Initialized git!"));
-    } catch (error) {
-      console.error(chalk.red('Git initialization failed:', error.message));
-      process.exit(1);
-    }
+    fs.writeFileSync(path.join(projectPath, '.gitignore'), 'node_modules\n.env\n');
   }
 
-  console.log(chalk.green('Project setup complete. Happy coding! 🎉'));
+  console.log(chalk.white(`\nScaffolding project in ${projectPath}`))
+
+  console.log(`
+Done. Now run:
+
+  ${chalk.green(`cd ${ projectName }`)}
+  ${chalk.green('npm install')}
+  ${chalk.green('npm run dev')}
+`);
+
+  console.log(chalk.green('\nHappy building! 🚀'));
 }
 
 setupProject();

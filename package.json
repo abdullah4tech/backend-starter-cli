@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
+  "scripts": {
+    "preinstall": "command -v pnpm || npm install -g pnpm"
+  },
   "keywords": [
     "backend",
     "starter-kit",
