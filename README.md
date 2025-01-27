@@ -17,13 +17,13 @@ Welcome to **Backend Starter CLI**! 🚀 This command-line interface (CLI) tool 
 - **Optional Prisma ORM**: Simplify database management with Prisma.
 - **Automatic Environment Configuration**: Generate an `.env` file for your project.
 - **Git Integration**: Optionally initialize a Git repository.
-- **Custom Boilerplate Code**: Generate framework-specific starter code.
+- **Custom template Code**: Generate framework-specific starter code.
 
 ---
 
 ## Installation
 
-To use the `backend-starter` CLI, first ensure you have [Node.js](https://nodejs.org/) (version 14 or higher) installed.
+To use the `backend-starter` CLI, first ensure you have [Node.js](https://nodejs.org/) (version 20 or higher) installed.
 
 ### Global Installation
 
@@ -109,29 +109,14 @@ my-awesome-backend/
 
 ## Requirements
 
-- Node.js >= 14.0.0
-- npm >= 6.0.0
+- Node.js >= 20.0.0
+- npm >= 10.0.0 or higher
 
 ---
 
 ## Contributing
 
-We welcome contributions to improve **Backend Starter CLI**! To contribute:
-
-1. Fork the repository.
-2. Create a feature branch:
-   ```bash
-   git checkout -b feature-name
-   ```
-3. Commit your changes:
-   ```bash
-   git commit -m "feat: add new feature"
-   ```
-4. Push to your branch:
-   ```bash
-   git push origin feature-name
-   ```
-5. Submit a pull request.
+For guidelines on contributing, please see [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ---
 
@@ -147,4 +132,4 @@ If you encounter any issues or have suggestions, please open an [issue](https://
 
 ---
 
-### Happy Coding! 🎉
+### Happy Building! 🎉
