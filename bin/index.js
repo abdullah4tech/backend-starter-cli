@@ -5,10 +5,6 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-process.on("SIGINT", () => {
-  console.log(chalk.yellow("\nProcess terminated by user. Goodbye!"));
-  process.exit(0); // Exit without errors
-});
 
 async function setupProject() {
   console.log(chalk.blue('\nWelcome to the Backend Starter CLI! 🚀\n'));
