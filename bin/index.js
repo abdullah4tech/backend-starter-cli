@@ -7,99 +7,100 @@ import path from 'path';
 
 
 async function setupProject() {
-  console.log(chalk.blue('\nWelcome to the Backend Starter CLI! 🚀\n'));
+  try {
+    console.log(chalk.blue('\nWelcome to the Backend Starter CLI! 🚀\n'));
 
-  const answers = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'projectName',
-      message: 'Enter your project name:',
-      default: 'my-backend-project',
-    },
-    {
-      type: 'confirm',
-      name: 'versionControl',
-      message: 'Do you want to initialize Git?',
-      default: false,
-    },
-    {
-      type: 'list',
-      name: 'framework',
-      message: 'Choose a backend framework:',
-      choices: ['Express', 'NestJS', 'Koa'],
-      default: 'Express',
-    },
-    {
-      type: 'confirm',
-      name: 'addDatabase',
-      message: 'Do you want to include database configuration?',
-      default: true,
-    },
-  ]);
-
-  let dbConfig = {};
-  if (answers.addDatabase) {
-    dbConfig = await inquirer.prompt([
+    const answers = await inquirer.prompt([
       {
-        type: 'list',
-        name: 'databaseType',
-        message: 'Choose a database type:',
-        choices: ['MongoDB', 'PostgreSQL', 'MySQL'],
-        default: 'MongoDB',
+        type: 'input',
+        name: 'projectName',
+        message: 'Enter your project name:',
+        default: 'my-backend-project',
       },
       {
         type: 'confirm',
-        name: 'createEnvFile',
-        message: 'Do you want to create an .env file for your database configuration?',
+        name: 'versionControl',
+        message: 'Do you want to initialize Git?',
+        default: false,
+      },
+      {
+        type: 'list',
+        name: 'framework',
+        message: 'Choose a backend framework:',
+        choices: ['Express', 'NestJS', 'Koa'],
+        default: 'Express',
+      },
+      {
+        type: 'confirm',
+        name: 'addDatabase',
+        message: 'Do you want to include database configuration?',
         default: true,
       },
     ]);
-  }
 
-  const { projectName, framework, versionControl, addDatabase } = answers;
-  const projectPath = path.resolve(process.cwd(), projectName);
+    let dbConfig = {};
+    if (answers.addDatabase) {
+      dbConfig = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'databaseType',
+          message: 'Choose a database type:',
+          choices: ['MongoDB', 'PostgreSQL', 'MySQL'],
+          default: 'MongoDB',
+        },
+        {
+          type: 'confirm',
+          name: 'createEnvFile',
+          message: 'Do you want to create an .env file for your database configuration?',
+          default: true,
+        },
+      ]);
+    }
 
-  // Create project directory
-  if (fs.existsSync(projectPath)) {
-    console.log(chalk.red(`Directory "${projectName}" already exists! Exiting.`));
-    process.exit(1);
-  }
-  fs.mkdirSync(projectPath);
+    const { projectName, framework, versionControl, addDatabase } = answers;
+    const projectPath = path.resolve(process.cwd(), projectName);
 
-  // Framework dependencies
-  const dependencies = {
-    Express: ['express'],
-    NestJS: ['@nestjs/core', '@nestjs/common', 'reflect-metadata'],
-    Koa: ['koa'],
-  };
+    // Create project directory
+    if (fs.existsSync(projectPath)) {
+      console.log(chalk.red(`Directory "${projectName}" already exists! Exiting.`));
+      process.exit(1);
+    }
+    fs.mkdirSync(projectPath);
 
-  // Initialize npm project with boilerplate package.json
-  const packageJsonPath = path.join(projectPath, 'package.json');
-  const packageJson = {
-    name: projectName,
-    version: '0.0.0',
-    main: 'index.js',
-    scripts: {
-      dev: 'node index.js',
-      start: 'node index.js',
-    },
-    dependencies: {},
-    type: 'module',
-    keywords: [],
-    author: "",
-    license: "ISC",
-    description: '',
-  };
+    // Framework dependencies
+    const dependencies = {
+      Express: ['express'],
+      NestJS: ['@nestjs/core', '@nestjs/common', 'reflect-metadata'],
+      Koa: ['koa'],
+    };
 
-  dependencies[framework].forEach(dep => {
-    packageJson.dependencies[dep] = "latest"; // Add framework dependencies
-  });
+    // Initialize npm project with boilerplate package.json
+    const packageJsonPath = path.join(projectPath, 'package.json');
+    const packageJson = {
+      name: projectName,
+      version: '0.0.0',
+      main: 'index.js',
+      scripts: {
+        dev: 'node index.js',
+        start: 'node index.js',
+      },
+      dependencies: {},
+      type: 'module',
+      keywords: [],
+      author: "",
+      license: "ISC",
+      description: '',
+    };
 
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    dependencies[framework].forEach(dep => {
+      packageJson.dependencies[dep] = "latest"; // Add framework dependencies
+    });
 
-  // Generate boilerplate code
-  const boilerplate = {
-    Express: `
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+
+    // Generate boilerplate code
+    const boilerplate = {
+      Express: `
 import express from 'express';
 
 const app = express();
@@ -113,11 +114,11 @@ app.listen(PORT, () => {
   console.log(\`Server is running on http://localhost:\${PORT}\`);
 });
 `,
-    NestJS: `
+      NestJS: `
 // NestJS boilerplate is available. Please refer to the official documentation to set up the project.
 console.log('NestJS boilerplate generated. Follow official docs for additional setup.');
 `,
-    Koa: `
+      Koa: `
 import Koa from 'koa';
 
 const app = new Koa();
@@ -129,11 +130,11 @@ app.listen(3000, () => {
   console.log('Server is running on http://localhost:3000');
 });
 `,
-  };
-  fs.writeFileSync(path.join(projectPath, 'index.js'), boilerplate[framework]);
+    };
+    fs.writeFileSync(path.join(projectPath, 'index.js'), boilerplate[framework]);
 
-  if (addDatabase) {
-    const envContent = `
+    if (addDatabase) {
+      const envContent = `
 DB_TYPE=${dbConfig.databaseType || 'your_db_type'}
 DB_HOST=localhost
 DB_PORT=5432
@@ -141,25 +142,32 @@ DB_USER=username
 DB_PASSWORD=password
 DB_NAME=database_name
     `;
-    fs.writeFileSync(path.join(projectPath, '.env'), envContent);
-  }
+      fs.writeFileSync(path.join(projectPath, '.env'), envContent);
+    }
 
-  // Git initialization
-  if (versionControl) {
-    fs.writeFileSync(path.join(projectPath, '.gitignore'), 'node_modules\n.env\n');
-  }
+    // Git initialization
+    if (versionControl) {
+      fs.writeFileSync(path.join(projectPath, '.gitignore'), 'node_modules\n.env\n');
+    }
 
-  console.log(chalk.white(`\nScaffolding project in ${projectPath}`))
+    console.log(chalk.white(`\nScaffolding project in ${projectPath}`))
 
-  console.log(`
+    console.log(`
 Done. Now run:
 
-  ${chalk.green(`cd ${ projectName }`)}
+  ${chalk.green(`cd ${projectName}`)}
   ${chalk.green('npm install')}
   ${chalk.green('npm run dev')}
 `);
 
-  console.log(chalk.green('\nHappy building! 🚀'));
+    console.log(chalk.green('\nHappy building! 🚀'));
+  } catch (err) {
+    if (err.name === 'ExitPromptError') {
+      console.log(chalk.red('Prompt interrupted by user. Exiting...'));
+    } else {
+      console.error(chalk.red('Unexpected error occurred. Exiting...'));
+    }
+  }
 }
 
 setupProject();
