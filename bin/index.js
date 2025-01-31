@@ -4,7 +4,7 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-
+import { execSync } from 'child_process';
 
 async function setupProject() {
   try {
@@ -147,6 +147,7 @@ DB_NAME=database_name
 
     // Git initialization
     if (versionControl) {
+      execSync(`git init ${projectName} > /dev/null 2>&1`)
       fs.writeFileSync(path.join(projectPath, '.gitignore'), 'node_modules\n.env\n');
     }
 
