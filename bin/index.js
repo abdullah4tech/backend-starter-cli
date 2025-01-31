@@ -21,7 +21,7 @@ async function setupProject() {
         type: 'confirm',
         name: 'versionControl',
         message: 'Do you want to initialize Git?',
-        default: false,
+        default: true,
       },
       {
         type: 'list',
