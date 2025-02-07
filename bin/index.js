@@ -83,8 +83,14 @@ async function setupProject() {
       scripts: {
         dev: 'node index.js',
         start: 'node index.js',
+        format: 'prettier --write *.js',
+        lint: 'eslint *.js --fix'
       },
       dependencies: {},
+      devDependencies: {
+        "prettier": "latest",
+        "eslint": "latest"
+      },
       type: 'module',
       keywords: [],
       author: "",
@@ -150,6 +156,44 @@ DB_NAME=database_name
       execSync(`git init ${projectName} > /dev/null 2>&1`)
       fs.writeFileSync(path.join(projectPath, '.gitignore'), 'node_modules\n.env\n');
     }
+
+    // Write Prettier configuration
+    const prettierConfig = {
+      semi: true,
+      singleQuote: true,
+      trailingComma: 'all',
+      printWidth: 80,
+      tabWidth: 2,
+    };
+
+    // Write ESLint configuration
+    const eslintConfig = {
+      env: {
+        node: true,
+        es6: true,
+      },
+      extends: 'eslint:recommended',
+      parserOptions: {
+        ecmaVersion: 2021,
+        sourceType: 'module',
+      },
+      rules: {
+        indent: ['error', 2],
+        'linebreak-style': ['error', 'unix'],
+        quotes: ['error', 'single'],
+        semi: ['error', 'always'],
+      },
+    };
+    
+    fs.writeFileSync(
+      path.join(projectPath, '.prettierrc.json'),
+      JSON.stringify(prettierConfig, null, 2)
+    );
+
+    fs.writeFileSync(
+      path.join(projectPath, '.eslintrc.cjs'),
+      JSON.stringify(eslintConfig, null, 2)
+    );
 
     console.log(chalk.white(`\nScaffolding project in ${projectPath}`))
 
